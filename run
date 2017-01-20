@@ -1,2 +1,39 @@
 #!/bin/bash
-./align.csh x x x
+set -e
+
+FLYWHEEL_BASE=/flywheel/v0
+IN=$FLYWHEEL_BASE/input
+OUT=$FLYWHEEL_BASE/output
+TMP=/tmp
+
+cd $TMP
+
+NATIVE=$IN/native/*
+NATIVE_BASENAME=$(basename $NATIVE)
+NATIVE_WITHOUT_EXT="${NATIVE_BASENAME%.*}"
+# converting input nifti to AFNI
+3dcalc -a $NATIVE -prefix $NATIVE_WITHOUT_EXT -expr 'a'
+
+# do align and warp
+$FLYWHEEL_BASE/align.csh $NATIVE_WITHOUT_EXT+orig $IN/standard/* $IN/warp_target/*
+
+# cleanup to avoid ambiguity in glob expressions below
+rm __tmp_*
+
+# HACK just making sure things look ok
+ls $TMP > $OUT/ls.log
+
+# convert output to nifti
+WARPED=*_native+orig.HEAD
+3dAFNItoNIFTI $WARPED
+
+# copy to output directory
+cp $(@GetAfniPrefix $WARPED).nii $OUT
+cp *_al2std_mat.aff12.1D $OUT
+cp *_inv.aff12.1D $OUT
+cp *_warp2std.nii.gz $OUT
+cp *_WARP.nii.gz $OUT
+# TODO might also consider copying *_aniso or *_aniso_clust, or avoid computing them.
+
+CONTAINER="[scitran-apps/brain-warp]"
+$FLYWHEEL_BASE/metadata_from_gear_output.py $OUT $CONTAINER
