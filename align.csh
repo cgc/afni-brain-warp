@@ -1,4 +1,4 @@
-#!/bin/tcsh
+#!/bin/tcsh -fe
 # affine alignment of individual dataset to D99 template
 #
 # usage:
@@ -20,8 +20,6 @@ if ("$#" <  "3") then
    echo " ${atlas_dir}/D99_atlas_1.2a_right.nii.gz"
    exit
 endif
-
-setenv AFNI_COMPRESSOR GZIP
 
 set dset = $1
 set base = $2
