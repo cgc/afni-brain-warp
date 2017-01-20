@@ -1,0 +1,26 @@
+{
+  "name": "brain-warp",
+  "label": "Brain Warp",
+  "description": "",
+  "author": "Carlos Correa <cgc@stanford.edu>",
+  "url": "https://github.com/scitran-apps/XXX",
+  "source": "https://github.com/scitran-apps/XXX",
+  "license": "GPL-2.0",
+  "flywheel": "0",
+  "version": "0.0.1",
+  "inputs": {
+    "standard": {
+      "base": "file",
+      "type": { "enum": [ "nifti" ] }
+    },
+    "native": {
+      "base": "file",
+      "type": { "enum": [ "nifti" ] }
+    },
+    "warp_target": {
+      "base": "file",
+      "type": { "enum": [ "nifti" ] }
+    }
+  },
+  "config": {}
+}
