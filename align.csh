@@ -1,4 +1,4 @@
-#!/bin/tcsh -fe
+#!/bin/tcsh
 # affine alignment of individual dataset to D99 template
 #
 # usage:
