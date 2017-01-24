@@ -14,9 +14,9 @@ if ("$#" <  "3") then
    echo "usage:"
    echo "   macaque_align.csh dset template_dset segmentation_dset segmentation_right_only_dset"
    echo "example:"
-   echo " tcsh -x macaque_align.csh macaque1+orig \"
-   echo "   ${atlas_dir}/D99_template.nii.gz \"
-   echo " ${atlas_dir}/D99_atlas_1.2a.nii.gz \"
+   echo " tcsh -x macaque_align.csh macaque1+orig \\"
+   echo "   ${atlas_dir}/D99_template.nii.gz \\"
+   echo " ${atlas_dir}/D99_atlas_1.2a.nii.gz \\"
    echo " ${atlas_dir}/D99_atlas_1.2a_right.nii.gz"
    exit
 endif
@@ -54,8 +54,8 @@ set dsetprefix = `@GetAfniPrefix $dset`
 # goto apply_warps
 
 # do affine alignment with lpa cost
-# using dset as dset2 input and the base as dset1 
-# (the base and source are treated differently 
+# using dset as dset2 input and the base as dset1
+# (the base and source are treated differently
 # by align_epi_anats resampling and by 3dAllineate)
 align_epi_anat.py -dset2 $dset -dset1 $base -overwrite -dset2to1 \
     -giant_move -suffix _al2std -dset1_strip None -dset2_strip None
@@ -66,7 +66,7 @@ align_epi_anat.py -dset2 $dset -dset1 $base -overwrite -dset2to1 \
     -prefix ${dsetprefix}_aff -base $base -master BASE         \
     -source $dset -overwrite
 
-# affinely align to template 
+# affinely align to template
 #  (could let auto_warp.py hande this, but AUTO_CENTER option might be needed)
 # @auto_tlrc -base $base -input $dset -no_ss -init_xform AUTO_CENTER
 
@@ -88,7 +88,7 @@ align_epi_anat.py -dset2 $dset -dset1 $base -overwrite -dset2to1 \
 rm -rf awpy_${dsetprefix}
 auto_warp.py -base $base -affine_input_xmat ID -qworkhard 0 2 \
    -input ${dsetprefix}_aff+tlrc -overwrite \
-   -output_dir awpy_${dsetprefix} 
+   -output_dir awpy_${dsetprefix}
 
 apply_warps:
 # the awpy has the result dataset, copy the warped data and the warp
@@ -117,7 +117,7 @@ gzip -f ${dsetprefix}_warp2std.nii ${dsetprefix}_WARP.nii
 
 
 cat_matvec -ONELINE ${dsetprefix}_al2std_mat.aff12.1D -I >! ${dsetprefix}_inv.aff12.1D
-# warp segmentation from atlas back to the original macaque space 
+# warp segmentation from atlas back to the original macaque space
 #  of the input dataset (compose overall warp when applying)
 #  note - if transforming other datasets like the template
 #    back to the same native space, it will be faster to compose
@@ -127,7 +127,7 @@ cat_matvec -ONELINE ${dsetprefix}_al2std_mat.aff12.1D -I >! ${dsetprefix}_inv.af
    "${dsetprefix}_inv.aff12.1D INV(${dsetprefix}_WARP.nii.gz)"  -overwrite \
    -source $segset -master ${dsetprefix}+orig -prefix __tmp_${dsetprefix}_seg
 
-# put back in non-shifted version (really native space) 
+# put back in non-shifted version (really native space)
 @Align_Centers -base ${finalmaster} -dset  __tmp_${dsetprefix}_seg+orig. -no_cp
 
 # change the datum type to byte to save space
@@ -158,7 +158,7 @@ if ($rightseg != "") then
       "${dsetprefix}_inv.aff12.1D INV(${dsetprefix}_WARP.nii.gz)"  -overwrite \
       -source ${rightseg} -master ${dsetprefix}+orig -prefix __tmp_${dsetprefix}_right_seg
 
-   # put back in non-shifted version (really native space) 
+   # put back in non-shifted version (really native space)
    @Align_Centers -base ${finalmaster} -dset  __tmp_${dsetprefix}_right_seg+orig. -no_cp
 
    # change the datum type to byte to save space
@@ -175,7 +175,7 @@ if ($rightseg != "") then
    IsoSurface -isorois+dsets -o native.gii -input ../${origdsetprefix}_right_seg+orig -noxform \
       -Tsmooth 0.1 100 -remesh 0.1
    cd ..
-endif 
+endif
 
 # create surfaces for all regions in atlas, but now in native space
 mkdir surfaces
@@ -200,7 +200,7 @@ echo "   segmentation in native space:  ${origdsetprefix}_seg+orig"
 echo "   base template in native space: D99_in_${origdsetprefix}+orig"
 echo "   surfaces in native space in surfaces directory"
 echo "   right-side surfaces in native space in right_surfaces directory"
-echo   
+echo
 echo "to show surfaces in suma, use a command like this:"
 echo "    suma -onestate -i surfaces/native*.gii -vol ${origdsetprefix}+orig -sv  D99_in_${origdsetprefix}_native+orig"
 echo "or to show the template transformed to native space, use this:"
