@@ -28,12 +28,9 @@ WARPED=*_native+orig.HEAD
 3dAFNItoNIFTI $WARPED
 
 # copy to output directory
-cp $(@GetAfniPrefix $WARPED).nii $OUT
-cp *_al2std_mat.aff12.1D $OUT
-cp *_inv.aff12.1D $OUT
-cp *_warp2std.nii.gz $OUT
-cp *_WARP.nii.gz $OUT
+mv $(@GetAfniPrefix $WARPED).nii $OUT
+mv *_al2std_mat.aff12.1D $OUT
+mv *_inv.aff12.1D $OUT
+mv *_warp2std.nii.gz $OUT
+mv *_WARP.nii.gz $OUT
 # TODO might also consider copying *_aniso or *_aniso_clust, or avoid computing them.
-
-CONTAINER="[scitran-apps/brain-warp]"
-$FLYWHEEL_BASE/metadata_from_gear_output.py $OUT $CONTAINER
