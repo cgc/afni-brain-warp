@@ -16,17 +16,17 @@
     "standard": {
       "base": "file",
       "type": { "enum": [ "nifti" ] },
-      "description": ""
+      "description": "Template image. This is our reference for standard-space."
     },
     "native": {
       "base": "file",
       "type": { "enum": [ "nifti" ] },
-      "description": ""
+      "description": "Subject image. This is our reference for native-space."
     },
     "warp_target": {
       "base": "file",
       "type": { "enum": [ "nifti" ] },
-      "description": ""
+      "description": "Image that we want to warp from standard-space to native-space."
     }
   },
   "config": {}
