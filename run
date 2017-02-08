@@ -35,4 +35,4 @@ mv *_al2std_mat.aff12.1D $OUT
 mv *_inv.aff12.1D $OUT
 mv *_warp2std.nii.gz $OUT
 mv *_WARP.nii.gz $OUT
-# TODO might also consider copying *_aniso or *_aniso_clust, or avoid computing them.
+# TODO might also consider copying *_aniso+orig or *_aniso_clust+orig, or avoid computing them.
