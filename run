@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+source environment.sh
+
 FLYWHEEL_BASE=/flywheel/v0
 IN=$FLYWHEEL_BASE/input
 OUT=$FLYWHEEL_BASE/output

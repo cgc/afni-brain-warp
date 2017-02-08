@@ -6,6 +6,6 @@ ENV FLYWHEEL /flywheel/v0
 RUN mkdir -p ${FLYWHEEL}
 WORKDIR ${FLYWHEEL}
 
-COPY run manifest.json align.csh run ${FLYWHEEL}/
+COPY run manifest.json align.csh environment.sh ${FLYWHEEL}/
 
-ENTRYPOINT ["/flywheel/v0/run"]
+CMD ["/flywheel/v0/run"]
