@@ -6,6 +6,8 @@ ENV FLYWHEEL /flywheel/v0
 RUN mkdir -p ${FLYWHEEL}
 WORKDIR ${FLYWHEEL}
 
-COPY run manifest.json align.csh environment.sh ${FLYWHEEL}/
+RUN env -u HOSTNAME -u PWD > environment.sh
+
+COPY run manifest.json align.csh ${FLYWHEEL}/
 
 CMD ["/flywheel/v0/run"]
