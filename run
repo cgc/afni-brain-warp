@@ -8,6 +8,11 @@ IN=$FLYWHEEL_BASE/input
 OUT=$FLYWHEEL_BASE/output
 TMP=/tmp
 
+# the following lets output show on stdout and stderr, and also
+# redirects them to files that will appear in the output.
+# combines http://stackoverflow.com/a/692407 and http://stackoverflow.com/a/11886837
+exec > >(tee -i $OUT/stdout.log) 2> >(tee -i $OUT/stderr.log >&2)
+
 cd $TMP
 
 RAW_NATIVE=$IN/native/*
