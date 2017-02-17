@@ -10,9 +10,15 @@ TMP=/tmp
 
 cd $TMP
 
-NATIVE=$IN/native/*
-NATIVE_BASENAME=$(basename $NATIVE)
-NATIVE_WITHOUT_EXT="${NATIVE_BASENAME%.*}"
+RAW_NATIVE=$IN/native/*
+NATIVE_BASENAME=$(basename $RAW_NATIVE)
+NATIVE_WITHOUT_EXT="${NATIVE_BASENAME%%.*}"
+
+mkdir $TMP/processed-native
+NATIVE=$TMP/processed-native/$NATIVE_BASENAME
+# fix nifti header issue
+python $FLYWHEEL_BASE/fix_nifti.py $RAW_NATIVE $NATIVE
+
 # converting input nifti to AFNI
 3dcalc -a $NATIVE -prefix $NATIVE_WITHOUT_EXT -expr 'a'
 
