@@ -33,17 +33,14 @@ $FLYWHEEL_BASE/align.csh $NATIVE_WITHOUT_EXT+orig $IN/standard/* $IN/warp_target
 # cleanup to avoid ambiguity in glob expressions below
 rm __tmp_*
 
-# HACK just making sure things look ok
-ls $TMP > $OUT/ls.log
-
 # convert output to nifti
-WARPED=*_native+orig.HEAD
-3dAFNItoNIFTI $WARPED
+for result in *.HEAD; do
+  3dAFNItoNIFTI $result
+  mv $(@GetAfniPrefix $result).nii $OUT
+done
 
 # copy to output directory
-mv $(@GetAfniPrefix $WARPED).nii $OUT
 mv *_al2std_mat.aff12.1D $OUT
 mv *_inv.aff12.1D $OUT
 mv *_warp2std.nii.gz $OUT
 mv *_WARP.nii.gz $OUT
-# TODO might also consider copying *_aniso+orig or *_aniso_clust+orig, or avoid computing them.
