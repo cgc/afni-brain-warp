@@ -1,38 +1,39 @@
 #!/bin/bash
 set -e
+(
+  source environment.sh
 
-source environment.sh
+  FLYWHEEL_BASE=/flywheel/v0
+  IN=$FLYWHEEL_BASE/input
+  OUT=$FLYWHEEL_BASE/output
+  TMP=/tmp
 
-FLYWHEEL_BASE=/flywheel/v0
-IN=$FLYWHEEL_BASE/input
-OUT=$FLYWHEEL_BASE/output
-TMP=/tmp
+  cd $TMP
 
-cd $TMP
+  NATIVE=$IN/native/*
+  NATIVE_BASENAME=$(basename $NATIVE)
+  NATIVE_WITHOUT_EXT="${NATIVE_BASENAME%.*}"
+  # converting input nifti to AFNI
+  3dcalc -a $NATIVE -prefix $NATIVE_WITHOUT_EXT -expr 'a'
 
-NATIVE=$IN/native/*
-NATIVE_BASENAME=$(basename $NATIVE)
-NATIVE_WITHOUT_EXT="${NATIVE_BASENAME%.*}"
-# converting input nifti to AFNI
-3dcalc -a $NATIVE -prefix $NATIVE_WITHOUT_EXT -expr 'a'
+  # do align and warp
+  $FLYWHEEL_BASE/align.csh $NATIVE_WITHOUT_EXT+orig $IN/standard/* $IN/warp_target/*
 
-# do align and warp
-$FLYWHEEL_BASE/align.csh $NATIVE_WITHOUT_EXT+orig $IN/standard/* $IN/warp_target/*
+  # cleanup to avoid ambiguity in glob expressions below
+  rm __tmp_*
 
-# cleanup to avoid ambiguity in glob expressions below
-rm __tmp_*
+  # HACK just making sure things look ok
+  ls $TMP > $OUT/ls.log
 
-# HACK just making sure things look ok
-ls $TMP > $OUT/ls.log
+  # convert output to nifti
+  WARPED=*_native+orig.HEAD
+  3dAFNItoNIFTI $WARPED
 
-# convert output to nifti
-WARPED=*_native+orig.HEAD
-3dAFNItoNIFTI $WARPED
-
-# copy to output directory
-mv $(@GetAfniPrefix $WARPED).nii $OUT
-mv *_al2std_mat.aff12.1D $OUT
-mv *_inv.aff12.1D $OUT
-mv *_warp2std.nii.gz $OUT
-mv *_WARP.nii.gz $OUT
-# TODO might also consider copying *_aniso+orig or *_aniso_clust+orig, or avoid computing them.
+  # copy to output directory
+  mv $(@GetAfniPrefix $WARPED).nii $OUT
+  mv *_al2std_mat.aff12.1D $OUT
+  mv *_inv.aff12.1D $OUT
+  mv *_warp2std.nii.gz $OUT
+  mv *_WARP.nii.gz $OUT
+  # TODO might also consider copying *_aniso+orig or *_aniso_clust+orig, or avoid computing them.
+) 2>&1 | tee /flywheel/v0/output/afni-brian-warp-log.txt
