@@ -8,6 +8,6 @@ WORKDIR ${FLYWHEEL}
 
 RUN env -u HOSTNAME -u PWD > environment.sh
 
-COPY run manifest.json align.csh ${FLYWHEEL}/
+COPY run *.py manifest.json align.csh ${FLYWHEEL}/
 
 CMD ["/flywheel/v0/run"]

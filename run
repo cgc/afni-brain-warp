@@ -8,11 +8,22 @@ IN=$FLYWHEEL_BASE/input
 OUT=$FLYWHEEL_BASE/output
 TMP=/tmp
 
+# the following lets output show on stdout and stderr, and also
+# redirects them to files that will appear in the output.
+# combines http://stackoverflow.com/a/692407 and http://stackoverflow.com/a/11886837
+exec > >(tee -i $OUT/stdout.log) 2> >(tee -i $OUT/stderr.log >&2)
+
 cd $TMP
 
-NATIVE=$IN/native/*
-NATIVE_BASENAME=$(basename $NATIVE)
-NATIVE_WITHOUT_EXT="${NATIVE_BASENAME%.*}"
+RAW_NATIVE=$IN/native/*
+NATIVE_BASENAME=$(basename $RAW_NATIVE)
+NATIVE_WITHOUT_EXT="${NATIVE_BASENAME%%.*}"
+
+mkdir $TMP/processed-native
+NATIVE=$TMP/processed-native/$NATIVE_BASENAME
+# fix nifti header issue
+python $FLYWHEEL_BASE/fix_nifti.py $RAW_NATIVE $NATIVE
+
 # converting input nifti to AFNI
 3dcalc -a $NATIVE -prefix $NATIVE_WITHOUT_EXT -expr 'a'
 
@@ -22,17 +33,14 @@ $FLYWHEEL_BASE/align.csh $NATIVE_WITHOUT_EXT+orig $IN/standard/* $IN/warp_target
 # cleanup to avoid ambiguity in glob expressions below
 rm __tmp_*
 
-# HACK just making sure things look ok
-ls $TMP > $OUT/ls.log
-
 # convert output to nifti
-WARPED=*_native+orig.HEAD
-3dAFNItoNIFTI $WARPED
+for result in *.HEAD; do
+  3dAFNItoNIFTI $result
+  mv $(@GetAfniPrefix $result).nii $OUT
+done
 
 # copy to output directory
-mv $(@GetAfniPrefix $WARPED).nii $OUT
 mv *_al2std_mat.aff12.1D $OUT
 mv *_inv.aff12.1D $OUT
 mv *_warp2std.nii.gz $OUT
 mv *_WARP.nii.gz $OUT
-# TODO might also consider copying *_aniso+orig or *_aniso_clust+orig, or avoid computing them.
