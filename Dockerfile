@@ -1,4 +1,4 @@
-FROM miykael/nipype_advanced
+FROM miykael/nipype_level1
 MAINTAINER Carlos Correa <cgc@stanford.edu>
 
 # Make directory for flywheel spec (v0)
